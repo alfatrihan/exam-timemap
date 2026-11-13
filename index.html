@@ -2,96 +2,12 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#163f38">
   <link rel="manifest" href="./manifest.webmanifest">
-  <script type="module" crossorigin src="./assets/index-D8HwVQyB.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-D0W762Ev.css">
-
-  <style>
-    /* মূল অ্যাপের ব্যাকগ্রাউন্ড স্বচ্ছ করা যাতে পেছনের আকাশ দেখা যায় */
-    body, #root {
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-
-    /* ডাইনামিক আকাশের মূল লেয়ার */
-    #sky-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      transition: background 1.5s ease;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    /* ৪টি সময়ের জন্য আলাদা আকাশের রঙ */
-    body.sky-morning #sky-bg {
-      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 60%, #ffecd2 100%);
-    }
-    body.sky-afternoon #sky-bg {
-      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 60%, #fbc2eb 100%);
-    }
-    body.sky-evening #sky-bg {
-      background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-    }
-    body.sky-night #sky-bg {
-      background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
-    }
-
-    /* রাতের আকাশে মিটমিট করা তারা */
-    #stars-layer {
-      display: none;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
-        radial-gradient(1.5px 1.5px at 70% 20%, #ffffff, transparent),
-        radial-gradient(2px 2px at 40% 70%, #e2e8f0, transparent),
-        radial-gradient(1px 1px at 85% 60%, #ffffff, transparent),
-        radial-gradient(2px 2px at 15% 80%, #cbd5e1, transparent);
-      background-size: 300px 300px;
-      animation: twinkle 4s infinite alternate;
-    }
-    body.sky-night #stars-layer {
-      display: block;
-    }
-
-    /* গভীর রাতে কোণা থেকে আসা উষ্ণ স্টাডি ল্যাম্পের আলো */
-    #study-lamp {
-      display: none;
-      position: absolute;
-      top: -100px;
-      right: -100px;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(253, 224, 71, 0.18) 0%, transparent 70%);
-    }
-    body.sky-night #study-lamp {
-      display: block;
-    }
-
-    @keyframes twinkle {
-      0% { opacity: 0.4; }
-      100% { opacity: 1; }
-    }
-
-    /* কনফেটি ক্যানভাস */
-    #confetti-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      pointer-events: none;
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <!-- ডাইনামিক আকাশ ও কনফেটি লেয়ার -->
@@ -101,83 +17,128 @@
   </div>
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- তোমার মূল অ্যাপ -->
-  <div id="root"></div>
+  <header>
+    <h1>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</h1>
+    <p>বার্ষিক পরীক্ষা ২০২৬ · সময়সূচি, রিভিশন প্ল্যান ও সিলেবাস ট্র্যাকার</p>
+  </header>
 
-  <script>
-    // ১. সময় অনুযায়ী আকাশ পরিবর্তন (Dynamic Sky Vibe)
-    function updateSkyVibe(forceHour = null) {
-      const hour = forceHour !== null ? forceHour : new Date().getHours();
-      const body = document.body;
-      body.classList.remove('sky-morning', 'sky-afternoon', 'sky-evening', 'sky-night');
+  <main class="container">
+    <!-- আজকের সারসংক্ষেপ ও লাইভ কাউন্টডাউন -->
+    <section class="hero-grid">
+      <div class="card today-card" id="today-summary-box"></div>
+      <div class="card countdown-card" id="countdown-box"></div>
+    </section>
 
-      if (hour >= 5 && hour < 12) {
-        body.classList.add('sky-morning');   // সকাল ৫টা - দুপুর ১২টা
-      } else if (hour >= 12 && hour < 18) {
-        body.classList.add('sky-afternoon'); // দুপুর ১২টা - সন্ধ্যা ৬টা
-      } else if (hour >= 18 && hour < 23) {
-        body.classList.add('sky-evening');   // সন্ধ্যা ৬টা - রাত ১১টা
-      } else {
-        body.classList.add('sky-night');     // রাত ১১টা - ভোর ৫টা (তারা + ল্যাম্প)
-      }
-    }
+    <!-- নেভিগেশন ট্যাব (SMART STUDY DESK আলাদা ট্যাবে সরানো হয়েছে) -->
+    <nav class="nav-tabs" role="tablist">
+      <button type="button" class="tab-btn active" onclick="switchTab('calendar-tab', this)">📅 ক্যালেন্ডার</button>
+      <button type="button" class="tab-btn" onclick="switchTab('routine-tab', this)">📋 পরীক্ষার রুটিন</button>
+      <button type="button" class="tab-btn" onclick="switchTab('revision-tab', this)">✅ রিভিশন চেকলিস্ট</button>
+      <button type="button" class="tab-btn" onclick="switchTab('syllabus-tab', this)">📖 সংক্ষিপ্ত সিলেবাস</button>
+      <button type="button" class="tab-btn" onclick="switchTab('smart-desk-tab', this)">🎯 স্মার্ট স্টাডি ডেস্ক</button>
+    </nav>
 
-    updateSkyVibe();
-    setInterval(() => updateSkyVibe(), 60000);
+    <!-- ট্যাব ১: ক্যালেন্ডার -->
+    <section id="calendar-tab" class="tab-content active card">
+      <div class="cal-controls">
+        <div class="quick-day-btns">
+          <button type="button" class="btn-sm" onclick="selectOffsetDay(-1)">গতকাল</button>
+          <button type="button" class="btn-sm active-quick" onclick="selectOffsetDay(0)">আজ</button>
+          <button type="button" class="btn-sm" onclick="selectOffsetDay(1)">আগামীকাল</button>
+        </div>
+        <div class="month-switch">
+          <button type="button" class="btn-sm" onclick="changeMonth(10)">নভেম্বর ২০২৬</button>
+          <button type="button" class="btn-sm" onclick="changeMonth(11)">ডিসেম্বর ২০২৬</button>
+        </div>
+      </div>
+      <div class="cal-month-title" id="cal-month-title">নভেম্বর ২০২৬</div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <div class="cal-detail-box" id="cal-detail-box"></div>
+    </section>
 
-    // ২. কনফেটি সেলিব্রেশন ফাংশন (Confetti Celebration)
-    function launchConfetti() {
-      const canvas = document.getElementById('confetti-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    <!-- ট্যাব ২: পরীক্ষার রুটিন -->
+    <section id="routine-tab" class="tab-content card">
+      <div class="section-header">
+        <h3>📋 বার্ষিক পরীক্ষার সময়সূচি</h3>
+        <span class="badge badge-primary">সকাল ৯:০০ – ১১:৩০</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="routine-table">
+          <thead>
+            <tr>
+              <th>তারিখ</th>
+              <th>বার</th>
+              <th>বিষয়</th>
+              <th>অবস্থা</th>
+            </tr>
+          </thead>
+          <tbody id="routine-tbody"></tbody>
+        </table>
+      </div>
+    </section>
 
-      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
-      const pieces = Array.from({ length: 130 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        size: Math.random() * 8 + 4,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        speedY: Math.random() * 3 + 2,
-        speedX: Math.random() * 2 - 1,
-        rotation: Math.random() * 360
-      }));
+    <!-- ট্যাব ৩: রিভিশন চেকলিস্ট -->
+    <section id="revision-tab" class="tab-content card">
+      <div class="section-header">
+        <h3>✅ পরীক্ষার আগের রিভিশন প্ল্যান</h3>
+        <span class="progress-label" id="progress-text">০% সম্পন্ন</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div id="revision-list"></div>
+    </section>
 
-      let frame = 0;
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(p => {
-          p.y += p.speedY;
-          p.x += p.speedX;
-          p.rotation += 4;
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate((p.rotation * Math.PI) / 180);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-          ctx.restore();
-        });
+    <!-- ট্যাব ৪: সংক্ষিপ্ত সিলেবাস -->
+    <section id="syllabus-tab" class="tab-content card">
+      <div class="section-header">
+        <h3>📖 বিষয়ভিত্তিক সিলেবাস</h3>
+      </div>
+      <p class="helper-text">যেকোনো বিষয়ে ক্লিক করে বিস্তারিত সিলেবাস দেখো।</p>
+      <div id="syllabus-container"></div>
+    </section>
 
-        frame++;
-        if (frame < 250) {
-          requestAnimationFrame(animate);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-      animate();
-    }
+    <!-- ট্যাব ৫: SMART STUDY DESK (সামনে থেকে সরিয়ে আলাদা ট্যাবে রাখা হয়েছে) -->
+    <section id="smart-desk-tab" class="tab-content">
+      <div class="card overview">
+        <div>
+          <span class="eyebrow">SMART STUDY DESK</span>
+          <h2>টপিকভিত্তিক প্রস্তুতি ট্র্যাকার</h2>
+          <p>প্রতিটি বিষয়ের অধ্যায় ও টপিক অনুযায়ী প্রস্তুতির অগ্রগতি ট্র্যাক করো এবং ব্যাকআপ সংরক্ষণ করো।</p>
+        </div>
+        <div id="overall"></div>
+      </div>
 
-    // ৩. পেজে "পরীক্ষা শেষ" বা "Completed" লেখা দেখা গেলে অটো কনফেটি ওড়ানো
-    let confettiTriggered = false;
-    const observer = new MutationObserver(() => {
-      const text = document.body.innerText;
-      if (!confettiTriggered && (text.includes('পরীক্ষা শেষ') || text.includes('সব পরীক্ষা শেষ') || text.includes('Completed'))) {
-        confettiTriggered = true;
-        launchConfetti();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  </script>
+      <div class="utility">
+        <button type="button" onclick="exportProgress()">⬇️ ব্যাকআপ ডাউনলোড (JSON)</button>
+        <label class="import-label">
+          ⬆️ ব্যাকআপ রিস্টোর
+          <input type="file" id="import-file" accept=".json" hidden>
+        </label>
+        <button type="button" onclick="window.print()">🖨️ রুটিন প্রিন্ট</button>
+        <span id="save-status">✓ অটো-সেভ চালু আছে</span>
+      </div>
+
+      <div id="planner-panel">
+        <div class="planner-tools">
+          <input type="search" id="topic-search" placeholder="টপিক বা বিষয় খুঁজুন...">
+          <select id="topic-filter">
+            <option value="all">সব টপিক</option>
+            <option value="todo">বাকি আছে</option>
+            <option value="done">সম্পন্ন হয়েছে</option>
+          </select>
+        </div>
+        <p id="empty-search" class="notice" hidden>কোনো টপিক খুঁজে পাওয়া যায়নি।</p>
+        <div id="subject-planner"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    স্টাডি ম্যাপ · বার্ষিক পরীক্ষা ২০২৬
+  </footer>
+
+  <script src="./data.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>

@@ -40,6 +40,8 @@ function renderTodayHero() {
     }
 }
 
+let confettiShown = false;
+
 // Live Countdown to Next Exam
 function updateCountdown() {
     const box = document.getElementById('countdown-box');
@@ -60,6 +62,10 @@ function updateCountdown() {
             <h3 style="margin:6px 0;">সব পরীক্ষা শেষ!</h3>
             <p style="font-size:0.85rem; opacity:0.85;">অভিনন্দন মহিয়া! এখন দারুণ ছুটি উপভোগ করো।</p>
         `;
+        if (!confettiShown && typeof launchConfetti === 'function') {
+            confettiShown = true;
+            launchConfetti();
+        }
         return;
     }
 
@@ -194,6 +200,7 @@ function renderRoutine() {
     let foundNext = false;
 
     tbody.innerHTML = examRoutine.map(ex => {
+        const exStart = new Date(`${ex.date}T09:00:00+06:00`);
         const exEnd = new Date(`${ex.date}T11:30:00+06:00`);
         let rowClass = '';
         let statusBadge = '<span class="badge badge-primary" style="margin:0;">আসন্ন</span>';
@@ -202,8 +209,9 @@ function renderRoutine() {
             rowClass = 'past';
             statusBadge = '<span class="badge badge-study" style="margin:0;">সম্পন্ন ✓</span>';
         } else if (!foundNext) {
+            const running = now >= exStart;
             rowClass = 'next-exam';
-            statusBadge = '<span class="badge badge-exam" style="margin:0;">${running ? "পরীক্ষা চলছে · শেষ হতে বাকি" : "পরবর্তী পরীক্ষা"}</span>';
+            statusBadge = `<span class="badge badge-exam" style="margin:0;">${running ? "পরীক্ষা চলছে" : "পরবর্তী পরীক্ষা"}</span>`;
             foundNext = true;
         }
 
