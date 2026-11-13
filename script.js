@@ -282,6 +282,72 @@ function renderSyllabus() {
     `).join('');
 }
 
+// ১. সময় অনুযায়ী আকাশ পরিবর্তন (Dynamic Sky Vibe)
+function updateSkyVibe(forceHour = null) {
+  const hour = forceHour !== null ? forceHour : new Date().getHours();
+  const body = document.body;
+  body.classList.remove('sky-morning', 'sky-afternoon', 'sky-evening', 'sky-night');
+
+  if (hour >= 5 && hour < 12) {
+    body.classList.add('sky-morning');   // সকাল ৫টা - দুপুর ১২টা
+  } else if (hour >= 12 && hour < 18) {
+    body.classList.add('sky-afternoon'); // দুপুর ১২টা - সন্ধ্যা ৬টা
+  } else if (hour >= 18 && hour < 23) {
+    body.classList.add('sky-evening');   // সন্ধ্যা ৬টা - রাত ১১টা
+  } else {
+    body.classList.add('sky-night');     // রাত ১১টা - ভোর ৫টা (তারা + ল্যাম্প)
+  }
+}
+
+// পেজ লোড হলেই আকাশ সেট হবে এবং প্রতি মিনিটে চেক করবে
+updateSkyVibe();
+setInterval(() => updateSkyVibe(), 60000);
+
+
+// ২. কনফেটি সেলিব্রেশন ফাংশন (Confetti Celebration)
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+  const pieces = Array.from({ length: 120 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    size: Math.random() * 8 + 4,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speedY: Math.random() * 3 + 2,
+    speedX: Math.random() * 2 - 1,
+    rotation: Math.random() * 360
+  }));
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.speedY;
+      p.x += p.speedX;
+      p.rotation += 4;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      ctx.restore();
+    });
+
+    frame++;
+    if (frame < 240) { // প্রায় ৪ সেকেন্ড ধরে কনফেটি উড়বে
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  animate();
+}
+
+
 function toggleSyl(idx) {
     const body = document.getElementById(`syl-body-${idx}`);
     const icon = document.getElementById(`syl-icon-${idx}`);
