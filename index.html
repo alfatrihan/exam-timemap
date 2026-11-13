@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বার্ষিক পরীক্ষার প্রস্তুতি - তাহিয়া তাবাচ্ছুম মাহিয়া</title>
+    <title>বার্ষিক পরীক্ষার প্রস্তুতি - তাহিয়া তাবাচ্ছুম মহিয়া</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,10 +11,13 @@
 
 <header>
     <h1>📚 বার্ষিক পরীক্ষার স্টাডি ম্যাপ ও রুটিন</h1>
-    <p>ফাহিয়া তাবাসসুম মাহিয়া • সপ্তম শ্রেণি • বার্ষিক পরীক্ষা ২০২৬</p>
+    <p>তাহিয়া তাবাচ্ছুম মহিয়া • সপ্তম শ্রেণি • বার্ষিক পরীক্ষা ২০২৬</p>
 </header>
 
 <div class="container">
+<section class="overview card"><div><span class="eyebrow">YOUR REVISION COMPANION · 2026</span><h2>একটি টপিক, আরেকটু এগিয়ে যাও।</h2><p>ছোট ছোট রিভিশনেই বড় প্রস্তুতি।</p></div><div id="overall"></div></section>
+<div class="utility"><button onclick="exportProgress()">↓ প্রগ্রেস ব্যাকআপ</button><label class="import-label">↑ ব্যাকআপ ফিরিয়ে আনো<input type="file" id="import-file" accept="application/json" hidden></label><button onclick="window.print()">রুটিন প্রিন্ট</button><span id="save-status" role="status">প্রগ্রেস এই ব্রাউজারে সেভ থাকবে</span></div>
+
     <!-- Today & Countdown Hero -->
     <div class="hero-grid">
         <div class="card today-card" id="today-summary-box"></div>
@@ -22,11 +25,11 @@
     </div>
 
     <!-- Navigation Tabs -->
-    <div class="nav-tabs">
+    <div class="nav-tabs" aria-label="প্রধান বিভাগ">
         <button class="tab-btn active" onclick="switchTab('calendar-tab', this)">📅 ক্যালেন্ডার ভিউ</button>
         <button class="tab-btn" onclick="switchTab('routine-tab', this)">📝 পরীক্ষার রুটিন</button>
-        <button class="tab-btn" onclick="switchTab('revision-tab', this)">✅ রিভিশন প্ল্যান</button>
-        <button class="tab-btn" onclick="switchTab('syllabus-tab', this)">📖 সম্পূর্ণ সিলেবাস</button>
+        <button class="tab-btn" onclick="switchTab('planner-panel', this)">☑ স্টাডি প্ল্যানার</button>
+        <button class="tab-btn" onclick="switchTab('revision-tab', this)">🗓 দৈনিক চেকলিস্ট</button><button class="tab-btn" onclick="switchTab('syllabus-tab', this)">📖 সম্পূর্ণ সিলেবাস</button>
     </div>
 
     <!-- Tab 1: Calendar -->
@@ -74,7 +77,8 @@
         </div>
     </div>
 
-    <!-- Tab 3: Revision Plan -->
+    <section id="planner-panel" class="tab-content"><div class="section-header"><div><h2>টপিক ধরে রিভিশন</h2><p>প্রতিটি টিকেই আপডেট হবে বিষয় ও মোট সিলেবাসের অগ্রগতি।</p></div></div><div class="planner-tools"><input id="topic-search" type="search" placeholder="বিষয় বা টপিক খুঁজে নাও…" aria-label="বিষয় বা টপিক খোঁজো"><select id="topic-filter" aria-label="প্রগ্রেস ফিল্টার"><option value="all">সব টপিক</option><option value="pending">বাকি আছে</option><option value="done">পড়া হয়েছে</option></select></div><p class="notice">বাংলা ১ম পত্রের বিস্তারিত সিলেবাস মূল সাইটে নেই। মোট প্রগ্রেস শুধু বিস্তারিত দেওয়া ৮টি বিষয়ের সমান ওজনের টপিক দিয়ে গণনা করা হয়; এটি পুরো ৯ বিষয়ের প্রস্তুতির পরিমাপ নয়।</p><div id="subject-planner"></div><p id="empty-search" hidden>কোনো টপিক মেলেনি। অন্য শব্দ দিয়ে খোঁজো।</p></section>
+<!-- Tab 3: Revision Plan -->
     <div id="revision-tab" class="tab-content">
         <div class="card">
             <div class="section-header">
@@ -95,6 +99,6 @@
     </div>
 </div>
 
-<script src="script.js"></script>
+<footer>তাহিয়া তাবাচ্ছুম মহিয়া · সপ্তম শ্রেণি · এক ধাপ করে এগিয়ে চলো ✦</footer><script src="data.js"></script><script src="script.js"></script>
 </body>
 </html>
