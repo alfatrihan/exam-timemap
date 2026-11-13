@@ -1,3 +1,183 @@
-<!doctype html><html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</title><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet"><meta name="theme-color" content="#163f38"><link rel="manifest" href="./manifest.webmanifest">  <script type="module" crossorigin src="./assets/index-D8HwVQyB.js"></script>
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#163f38">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <script type="module" crossorigin src="./assets/index-D8HwVQyB.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-D0W762Ev.css">
-</head><body><div id="root"></div></body></html>
+
+  <style>
+    /* মূল অ্যাপের ব্যাকগ্রাউন্ড স্বচ্ছ করা যাতে পেছনের আকাশ দেখা যায় */
+    body, #root {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    /* ডাইনামিক আকাশের মূল লেয়ার */
+    #sky-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      transition: background 1.5s ease;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* ৪টি সময়ের জন্য আলাদা আকাশের রঙ */
+    body.sky-morning #sky-bg {
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 60%, #ffecd2 100%);
+    }
+    body.sky-afternoon #sky-bg {
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 60%, #fbc2eb 100%);
+    }
+    body.sky-evening #sky-bg {
+      background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+    }
+    body.sky-night #sky-bg {
+      background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+    }
+
+    /* রাতের আকাশে মিটমিট করা তারা */
+    #stars-layer {
+      display: none;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 70% 20%, #ffffff, transparent),
+        radial-gradient(2px 2px at 40% 70%, #e2e8f0, transparent),
+        radial-gradient(1px 1px at 85% 60%, #ffffff, transparent),
+        radial-gradient(2px 2px at 15% 80%, #cbd5e1, transparent);
+      background-size: 300px 300px;
+      animation: twinkle 4s infinite alternate;
+    }
+    body.sky-night #stars-layer {
+      display: block;
+    }
+
+    /* গভীর রাতে কোণা থেকে আসা উষ্ণ স্টাডি ল্যাম্পের আলো */
+    #study-lamp {
+      display: none;
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(253, 224, 71, 0.18) 0%, transparent 70%);
+    }
+    body.sky-night #study-lamp {
+      display: block;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* কনফেটি ক্যানভাস */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- ডাইনামিক আকাশ ও কনফেটি লেয়ার -->
+  <div id="sky-bg">
+    <div id="stars-layer"></div>
+    <div id="study-lamp"></div>
+  </div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- তোমার মূল অ্যাপ -->
+  <div id="root"></div>
+
+  <script>
+    // ১. সময় অনুযায়ী আকাশ পরিবর্তন (Dynamic Sky Vibe)
+    function updateSkyVibe(forceHour = null) {
+      const hour = forceHour !== null ? forceHour : new Date().getHours();
+      const body = document.body;
+      body.classList.remove('sky-morning', 'sky-afternoon', 'sky-evening', 'sky-night');
+
+      if (hour >= 5 && hour < 12) {
+        body.classList.add('sky-morning');   // সকাল ৫টা - দুপুর ১২টা
+      } else if (hour >= 12 && hour < 18) {
+        body.classList.add('sky-afternoon'); // দুপুর ১২টা - সন্ধ্যা ৬টা
+      } else if (hour >= 18 && hour < 23) {
+        body.classList.add('sky-evening');   // সন্ধ্যা ৬টা - রাত ১১টা
+      } else {
+        body.classList.add('sky-night');     // রাত ১১টা - ভোর ৫টা (তারা + ল্যাম্প)
+      }
+    }
+
+    updateSkyVibe();
+    setInterval(() => updateSkyVibe(), 60000);
+
+    // ২. কনফেটি সেলিব্রেশন ফাংশন (Confetti Celebration)
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+      const pieces = Array.from({ length: 130 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: Math.random() * 3 + 2,
+        speedX: Math.random() * 2 - 1,
+        rotation: Math.random() * 360
+      }));
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += 4;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 250) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    // ৩. পেজে "পরীক্ষা শেষ" বা "Completed" লেখা দেখা গেলে অটো কনফেটি ওড়ানো
+    let confettiTriggered = false;
+    const observer = new MutationObserver(() => {
+      const text = document.body.innerText;
+      if (!confettiTriggered && (text.includes('পরীক্ষা শেষ') || text.includes('সব পরীক্ষা শেষ') || text.includes('Completed'))) {
+        confettiTriggered = true;
+        launchConfetti();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  </script>
+</body>
+</html>
