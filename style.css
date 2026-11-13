@@ -542,3 +542,93 @@ body.sky-night #study-lamp {
 body {
   background: transparent !important;
 }
+
+
+/* Sky & Rain Controls in Header */
+.sky-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.sky-pill-btn {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  padding: 7px 13px !important;
+  border-radius: 999px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+}
+.sky-pill-btn:hover, .sky-pill-btn.active-vibe {
+  background: rgba(255, 255, 255, 0.28) !important;
+  border-color: #ffdc8b !important;
+  color: #ffdc8b !important;
+}
+
+/* Rain Canvas */
+#rain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Shooting Stars (শুধু রাতের আকাশে দেখা যাবে) */
+#shooting-stars-layer {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+body.sky-night #shooting-stars-layer {
+  display: block;
+}
+.shooting-star {
+  position: absolute;
+  width: 130px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  border-radius: 999px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.85));
+  opacity: 0;
+  transform: rotate(-35deg);
+  animation: shootStar 1.4s ease-out forwards;
+}
+.shooting-star::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.9);
+}
+@keyframes shootStar {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-35deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-420px, 290px) rotate(-35deg);
+  }
+}
+
+/* হালকা গ্লাসমরফিজম কার্ড যাতে পেছনের আকাশ ও বৃষ্টির আভা সুন্দর লাগে */
+.card, .subject-card, .syl-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+}
+.countdown-card {
+  background: rgba(22, 63, 56, 0.94) !important;
+}

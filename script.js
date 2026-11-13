@@ -399,3 +399,124 @@ document.getElementById('topic-search').addEventListener('input',filterTopics);d
 function exportProgress(){const data={version:1,topics:topicState,revisions:readSaved('mahiya_exam_rev_2026')};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='mahiya-study-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 document.getElementById('import-file').addEventListener('change',async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(data.version!==1||!data.topics||typeof data.topics!=='object'||Array.isArray(data.topics))throw Error();if(!confirm('এই ব্যাকআপ দিয়ে বর্তমান প্রগ্রেস প্রতিস্থাপন করবে?'))return;topicState=Object.fromEntries(topics.flat().map(t=>[t.id,data.topics[t.id]===true]));writeSaved(topicKey,topicState);writeSaved('mahiya_exam_rev_2026',Object.fromEntries(revisionTasks.map(t=>[t.id,data.revisions?.[t.id]===true])));renderPlanner();renderRevisions();filterTopics();}catch{alert('সঠিক প্রগ্রেস ব্যাকআপ JSON ফাইল নির্বাচন করো।')}finally{e.target.value=''}});
 renderPlanner();
+
+
+// ৩. শুটিং স্টার অ্যানিমেশন (Shooting Star - রাতের আকাশে মাঝে মাঝে তারা খসে পড়া)
+function spawnShootingStar() {
+  if (!document.body.classList.contains('sky-night')) return;
+  const layer = document.getElementById('shooting-stars-layer');
+  if (!layer) return;
+
+  const star = document.createElement('div');
+  star.className = 'shooting-star';
+  star.style.top = `${Math.random() * 45}%`;
+  star.style.left = `${30 + Math.random() * 65}%`;
+  layer.appendChild(star);
+
+  setTimeout(() => {
+    star.remove();
+  }, 1600);
+}
+
+// পেজ লোডের ৩ সেকেন্ড পর একটি শুটিং স্টার দেখাবে এবং এরপর প্রতি ১৮-৩৫ সেকেন্ড পরপর দেখাবে
+setTimeout(spawnShootingStar, 3000);
+setInterval(() => {
+  if (Math.random() > 0.3) spawnShootingStar();
+}, 18000);
+
+
+// ৪. বৃষ্টি অ্যানিমেশন (Rain Vibe Toggle)
+let isRaining = localStorage.getItem('mahiya_rain_vibe') === 'true';
+let rainAnimId = null;
+
+function initRain() {
+  const canvas = document.getElementById('rain-canvas');
+  const btn = document.getElementById('rain-toggle-btn');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resizeRain() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeRain();
+  window.addEventListener('resize', resizeRain);
+
+  const drops = Array.from({ length: 95 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    len: Math.random() * 16 + 10,
+    speed: Math.random() * 5 + 6,
+    opacity: Math.random() * 0.35 + 0.2
+  }));
+
+  function drawRain() {
+    if (!isRaining) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      rainAnimId = null;
+      return;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const isDarkSky = document.body.classList.contains('sky-night') || document.body.classList.contains('sky-evening');
+    ctx.lineWidth = 1.2;
+    ctx.lineCap = 'round';
+
+    drops.forEach(d => {
+      ctx.strokeStyle = isDarkSky ? `rgba(186, 230, 253, ${d.opacity})` : `rgba(51, 65, 85, ${d.opacity * 0.75})`;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - 1.5, d.y + d.len);
+      ctx.stroke();
+
+      d.y += d.speed;
+      d.x -= 0.8;
+      if (d.y > canvas.height) {
+        d.y = -d.len;
+        d.x = Math.random() * canvas.width;
+      }
+      if (d.x < 0) d.x = canvas.width;
+    });
+
+    rainAnimId = requestAnimationFrame(drawRain);
+  }
+
+  if (btn) {
+    btn.textContent = isRaining ? '🌧️ বৃষ্টি: চালু' : '🌧️ বৃষ্টি: বন্ধ';
+    btn.classList.toggle('active-vibe', isRaining);
+  }
+  if (isRaining && !rainAnimId) {
+    drawRain();
+  }
+}
+
+function toggleRain() {
+  isRaining = !isRaining;
+  localStorage.setItem('mahiya_rain_vibe', isRaining);
+  initRain();
+}
+
+// ৫. আকাশের ৪টি মুড এক ক্লিকে টেস্ট/পরিবর্তন করার বাটন
+const skyModes = [
+  { hour: null, label: '🌌 আকাশ: অটো' },
+  { hour: 9,    label: '🌅 আকাশ: সকাল' },
+  { hour: 15,   label: '☀️ আকাশ: বিকেল' },
+  { hour: 20,   label: '🌆 আকাশ: সন্ধ্যা' },
+  { hour: 1,    label: '🌠 আকাশ: রাত' }
+];
+let currentSkyIdx = 0;
+
+function cycleSkyPreview() {
+  currentSkyIdx = (currentSkyIdx + 1) % skyModes.length;
+  const mode = skyModes[currentSkyIdx];
+  updateSkyVibe(mode.hour);
+  const btn = document.getElementById('sky-preview-btn');
+  if (btn) {
+    btn.textContent = mode.label;
+    btn.classList.toggle('active-vibe', mode.hour !== null);
+  }
+  if (mode.hour === 1) {
+    setTimeout(spawnShootingStar, 400);
+  }
+}
+
+initRain();

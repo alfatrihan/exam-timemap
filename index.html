@@ -13,13 +13,23 @@
   <!-- ডাইনামিক আকাশ ও কনফেটি লেয়ার -->
   <div id="sky-bg">
     <div id="stars-layer"></div>
+    <div id="shooting-stars-layer"></div>
     <div id="study-lamp"></div>
+    <canvas id="rain-canvas"></canvas>
   </div>
   <canvas id="confetti-canvas"></canvas>
 
   <header>
-    <h1>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</h1>
-    <p>বার্ষিক পরীক্ষা ২০২৬ · সময়সূচি, রিভিশন প্ল্যান ও সিলেবাস ট্র্যাকার</p>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h1>স্টাডি ম্যাপ — তাহিয়া তাবাচ্ছুম মহিয়া</h1>
+        <p>বার্ষিক পরীক্ষা ২০২৬ · সময়সূচি, রিভিশন প্ল্যান ও সিলেবাস ট্র্যাকার</p>
+      </div>
+      <div class="sky-controls">
+        <button type="button" id="rain-toggle-btn" class="sky-pill-btn" onclick="toggleRain()" title="বৃষ্টি চালু/বন্ধ করুন">🌧️ বৃষ্টি: বন্ধ</button>
+        <button type="button" id="sky-preview-btn" class="sky-pill-btn" onclick="cycleSkyPreview()" title="আকাশের সময় পরিবর্তন করে দেখুন">🌌 আকাশ: অটো</button>
+      </div>
+    </div>
   </header>
 
   <main class="container">
